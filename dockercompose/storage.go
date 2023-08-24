@@ -7,7 +7,14 @@ import (
 	"github.com/nhost/be/services/mimir/schema/appconfig"
 )
 
-func storage(
+func deptr[T any](t *T) T { //nolint:ireturn
+	if t == nil {
+		return *new(T)
+	}
+	return *t
+}
+
+func storage( //nolint:funlen
 	cfg *model.ConfigConfig,
 	useTLS bool,
 	httpPort uint,
@@ -24,6 +31,7 @@ func storage(
 		"",
 		"minioaccesskey123123",
 		"minioaccesskey123123",
+		deptr(cfg.Storage.GetAntivirus().GetServer()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get storage env vars: %w", err)
